@@ -135,23 +135,6 @@ def write_topic_specific_stream(spark, kafka_df, topic_name):
     # Write to bronze layer
     return write_to_bronze_layer(processed_df, topic_name)
 
-def cleanup_checkpoints():
-    """Clean up existing checkpoints when necessary"""
-    import shutil
-    import os
-    
-    checkpoint_base = "/tmp/spark-checkpoints"
-
-    
-    if os.path.exists(checkpoint_base):
-        try:
-            shutil.rmtree(checkpoint_base)
-            os.makedirs(checkpoint_base, exist_ok=True)
-            logger.info("Cleaned up all existing checkpoints")
-        except Exception as e:
-            logger.warning(f"Could not clean checkpoints: {e}")
-    else:
-        logger.info("No existing checkpoints found")
 
 def verify_bronze_path(spark):
     """Verify bronze path exists in MinIO"""
@@ -166,8 +149,6 @@ def main():
     logger.info("Starting Flood Data Streaming to Bronze Layer")
     
     try:
-        # Only force cleanup if you're having serialization issues
-        cleanup_checkpoints()
         
         # Create Spark session
         spark = create_spark_session()
