@@ -1,0 +1,172 @@
+# Data Lakes and Storage - DO NOT COMMIT DATA
+data/
+*.parquet
+*.csv
+*.json
+*.avro
+*.orc
+*.delta
+
+# MinIO/S3 Data
+minio-data/
+s3-data/
+bronze/
+silver/
+gold/
+
+# Docker Volumes and Persistent Data
+docker-data/
+volumes/
+pg_data/
+kafka-data/
+zookeeper-data/
+spark-warehouse/
+
+# Checkpoints and Temporary Files
+checkpoints/
+tmp/
+temp/
+.tmp/
+*checkpoint*
+*_checkpoint/
+spark-warehouse/
+
+# Environment and Configuration
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+config/secrets/
+secrets/
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# Docker
+.docker/
+docker-compose.override.yml
+.dockerignore
+
+# Logs
+logs/
+*.log
+*.log.*
+log/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Large files and archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.iso
+
+# Test coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Spark
+metastore_db/
+derby.log
+spark-warehouse/
+
+# Certificates and Keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+
+# Documentation builds
+docs/_build/
+site/
+
+# Cache directories
+.cache/
+*.cache
+.npm/
+.yarn/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+*.kubeconfig
+kubeconfig

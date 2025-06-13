@@ -1,0 +1,84 @@
+
+API link "https://environment.data.gov.uk/flood-monitoring/doc/reference"
+
+The Environment Agency Real Time flood-monitoring API provides near real-time information about:
+- Flood warnings and alerts.
+- Flood areas to which warnings or alerts apply.
+- Measurements of water levels and flows.
+- Information on the monitoring stations providing those measurements.
+
+
+data lakehouse architecture
+
+1/ near real Time data API →(use kafka + python to load data to kafka) Kafka →use spark to load data to MinIO → 
+2/ (read data from minio and transform data by Spark Bronze/Silver/Gold)  Spark containner + Delta Lake(file system)→ 
+3/ Databricks SparkML+ MLflow (Huấn luyện, Đánh giá, Triển khai mo hinh)  
+4/ Hive Metastore + Trino(read data from minio gold layer) + Superset(visualize data)
+
+
+
+spark.conf.set("spark.hadoop.fs.s3a.endpoint", "http://192.168.1.12:9000")  # Replace with actual host IP
+spark.conf.set("spark.hadoop.fs.s3a.access.key", "minio_access_key")  # From docker-compose
+spark.conf.set("spark.hadoop.fs.s3a.secret.key", "minio_secret_key")  # From docker-compose
+spark.conf.set("spark.hadoop.fs.s3a.path.style.access", "true")
+spark.conf.set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+spark.conf.set("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
+
+
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code
+COPY flood_data_pipeline.py .
+
+RUN pip install --no-cache-dir kafka-python requests
+
+
+check kafka topic
+
+docker exec -it kafka kafka-topics --list --bootstrap-server kafka:29092
+
+docker exec -it kafka kafka-topics --describe --topic historical-readings --bootstrap-server kafka:29092
+
+
+docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:29092 --topic flood-warnings --from-beginning --max-messages 2
+
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   APIs/Kafka    │───▶│   Bronze Layer   │───▶│  Silver Layer   │
+│   (Raw JSON)    │    │  (Raw Parquet)   │    │ (Delta Tables)  │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                                                         │
+                                                         ▼
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│     Trino       │◀───│   Gold Layer     │◀───│   ML Pipeline   │
+│   Analytics     │    │ (Delta Models)   │    │ (Delta Features)│
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+
+
+
+# 1. Start containers
+docker-compose up -d
+
+# 2. Clear checkpoints  
+docker exec spark-master rm -rf /tmp/checkpoint
+docker exec spark-worker-1 rm -rf /tmp/checkpoint
+
+# 3. Start data producer
+cd etl-pineline/extract
+$env:KAFKA_BOOTSTRAP_SERVERS="localhost:9092"
+python to_kafka.py &
+
+# 4. Start streaming job
+docker exec -d spark-master spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.2 /opt/bitnami/spark/scripts/to_minio_single.py
+
+
+
+docker-compose restart spark-master spark-worker-1 kafka
+
+
+# docker exec -it spark-master spark-submit /opt/bitnami/spark/scripts/to_minio.py
