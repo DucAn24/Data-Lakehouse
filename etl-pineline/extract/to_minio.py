@@ -211,3 +211,4 @@ if __name__ == "__main__":
     main()
 
 # docker exec -it spark-master spark-submit /opt/bitnami/spark/scripts/to_minio.py
+# docker exec -it spark-master spark-submit /opt/bitnami/spark/scripts/to_kafka.py
