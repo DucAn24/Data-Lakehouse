@@ -78,7 +78,7 @@ services:
       - data-lakehouse-network
 
   spark-worker-1:
-    image: docker.io/bitnami/spark:3.3.2
+    image: apache/spark:3.4.0-python3
     container_name: "spark-worker-1"
     environment:
       - SPARK_MODE=worker
